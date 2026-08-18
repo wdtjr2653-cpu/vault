@@ -19,15 +19,23 @@ Folder and tag names stay in English (for structure and portability); note **con
 
 ## Note conventions
 
-- Filename format: `YYYY-MM-DD 제목.md` (date prefix + Korean title), e.g. `2026-08-18 프로젝트 킥오프.md` — applies to all notes, including Zettelkasten notes
-- New notes start in `00-Inbox/` and get moved into the appropriate PARA folder (or Zettelkasten) once triaged
+- PARA notes (`00`–`04`): filename format `YYYY-MM-DD 제목.md` (date prefix + Korean title), e.g. `2026-08-18 프로젝트 킥오프.md`
+- Zettelkasten notes (`05-Zettelkasten/`): filename is the claim itself, no date prefix, e.g. `습관은 마찰력처럼 작동한다.md` (see below — the title has to carry the idea, not the capture date)
+- New notes start in `00-Inbox/` and get moved into the appropriate PARA folder (or distilled into Zettelkasten) once triaged
 - Use `[[wikilinks]]` to connect related notes rather than duplicating content
 
 ## PARA vs. Zettelkasten: where a note goes
 
-PARA (folders 00–04) organizes material by *actionability* — where you'll need it and by when. Zettelkasten (`05-Zettelkasten/`) organizes ideas by *connection* — a flat pool with no subfolders, browsed and discovered through links rather than through folder hierarchy. The two layers coexist:
+PARA (folders 00–04) organizes material by *actionability* — where you'll need it and by when. Zettelkasten (`05-Zettelkasten/`) organizes ideas by *connection* — a flat pool with no subfolders, browsed and discovered through links (and tags for filtering) rather than through folder hierarchy. The two layers coexist:
 
 - If a note is project/task-bound reference material or action items → file it under the relevant `01-Projects`/`02-Areas`/`03-Resources` folder, as before.
-- If a note captures a single, reusable idea you expect to reference from multiple contexts later → move it to `05-Zettelkasten/` instead. One note = one idea.
-- Every Zettelkasten note must link to at least one or two related Zettelkasten notes via `[[wikilinks]]` — no orphan notes. The goal is discovery through the link graph, not through folders.
-- PARA notes (especially project notes) can `[[link]]` out to relevant Zettelkasten notes rather than duplicating the idea inline.
+- If a note captures a single, reusable idea you expect to reference from multiple contexts later → don't just move the raw capture. **Rewrite it in your own words as a self-contained claim**, then save it into `05-Zettelkasten/`. One note = one idea, and it has to be understandable without reading anything else.
+
+### Zettelkasten note rules
+
+- **Title = a claim, not a topic.** "습관은 마찰력처럼 작동한다" instead of "습관". A good title is a sentence someone could agree or disagree with.
+- **Body is a rewrite, not a summary or copy-paste.** If you're transcribing a source, that belongs in a literature note (a regular Resources note tagged with its source) — the Zettelkasten note only gets created once you've distilled it into your own thought.
+- **Tags, not subfolders.** Every permanent note gets `#type/permanent`; add a topic tag like `#domain/생산성` for filtering. The folder itself stays flat — tags do the categorization, not directory placement.
+- **Link to at least one or two related notes** via `[[wikilinks]]` — no orphan notes. Discovery happens through the link graph (and Obsidian's automatic backlinks), not through folders.
+- **MOC (Map of Content) notes**: when a topic accumulates enough permanent notes to need an entry point, create `MOC - 주제명.md` inside `05-Zettelkasten/` — just a list of links to the relevant notes, tagged `#type/moc`.
+- PARA notes (especially project notes) `[[link]]` out to relevant Zettelkasten notes rather than duplicating the idea inline; the reverse direction shows up automatically via Obsidian's backlinks panel.
