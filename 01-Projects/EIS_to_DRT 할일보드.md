@@ -6,13 +6,10 @@ kanban-plugin: board
 
 ## 할 일
 
-- [ ] **[신규, 우선] N-baseline z-score 피처 누수 수정** — `features.py`의 `add_n_baseline_feature()`가 train/test 분할 전에 전체 N=40 샘플로 median/scale을 한 번만 계산해 `summary.csv`에 고정함. CV의 각 fold test-N 샘플이 자기 자신의 baseline 계산에 포함되는 leakage. Fold별로 train-N만으로 재계산하도록 수정 필요 (2026-08-20 코드 리뷰에서 발견)
-- [ ] **[신규, 우선] `lambda_star`를 분류기 feature로 쓰기 전에 재현성 문제부터 해결** — 아래 "λ* 550배 차이" 항목 미해결 상태로 설계 스펙 feature 목록에 이미 포함됨. 노이즈 큰 피처가 그대로 들어가면 분류기가 우연한 상관을 학습할 위험 (2026-08-20 코드 리뷰)
-- [ ] λ 탐색 그리드 상한 확장 (불량_A-32가 현재 그리드 최댓값 10에 걸림)
-- [ ] 불량_Test-H15 반복측정 간 λ* 550배 차이 원인 조사 (L-curve+offset 재현성 문제) — 참고: GCV/modified GCV/robust GCV 등 L-curve 대안 비교 문헌([DRTtools, ACS Electrochemistry 2025](https://pubs.acs.org/doi/10.1021/acselectrochem.5c00334)), Bayesian DRT(MCMC 불확실도 정량화)로 근본 원인 진단 가능([Adaptive DRT Bayesian Mixtures, JPCC](https://pubs.acs.org/doi/10.1021/acs.jpcc.5c04766))
+- [ ] `train_classifier.py` 구현 시 `n_baseline_zscore()`를 **CV 매 fold 안에서** 호출할 것(전역 1회 호출 금지) + **Nested CV**(단순 CV는 n=282 소표본에서 낙관적 편향 — 임계값 튜닝과 평가를 분리) + 반복 stratified CV로 recall 신뢰구간 보고(fold당 N=8뿐이라 분산 큼) + **feature 목록에서 `lambda_star` 제외**(아래 최종결정 참고)
+- [ ] **[별도 R&D 과제로 분리] λ 선택법을 GCV 계열로 교체** — 제약(non-negativity) 있는 최소자승 문제의 유효자유도 근사가 필요한 상당한 수치해석 작업. 참고: GCV/modified GCV/robust GCV 등 비교 문헌([DRTtools, ACS Electrochemistry 2025](https://pubs.acs.org/doi/10.1021/acselectrochem.5c00334)), Bayesian DRT(MCMC 불확실도 정량화)([Adaptive DRT Bayesian Mixtures, JPCC](https://pubs.acs.org/doi/10.1021/acs.jpcc.5c04766))
 - [ ] 향후 신규 데이터 수집 시 그룹당 일부 셀에 2~3회 반복측정 프로토콜 반영 (실제 실행은 측정팀 협의 필요)
 - [ ] SOH 예측용 신규 데이터 수집 실험 설계 (동일 셀에 EIS/DRT + 실측 용량검사 페어링) — 측정팀 협의 필요
-- [ ] `train_classifier.py` 구현: RandomForest 이진분류 + **Nested CV**(단순 CV는 n=282 소표본에서 낙관적 편향 — 임계값 튜닝과 평가를 분리) + 반복 stratified CV로 recall 신뢰구간 보고(fold당 N=8뿐이라 분산 큼)
 - [ ] (참고, 후순위) L2(2차미분) Tikhonov 대신 entropy 기반 정규화 검토 — DRT 복원 오차 ~50% 감소 보고됨([ScienceDirect 2025](https://www.sciencedirect.com/science/article/abs/pii/S0378775325007463))
 
 ## 진행중
@@ -20,6 +17,12 @@ kanban-plugin: board
 
 ## 완료
 
+- [x] **λ* 근본해결 시도 2건, 둘 다 실증에서 악화 확인 후 되돌림 → `lambda_star`를 feature에서 제외하는 것으로 최종 결정 (2026-08-20)**
+  1. 그리드 확장(10→1000): 불량_A-12가 1.0x→215x로 악화(기존 그리드가 우연히 경계값에 "붙잡아뒀던" 것뿐이었음이 드러남)
+  2. Hansen 스플라인 기반 곡률: 그리드 경계에서 인위적 스파이크, 최대 2700만x로 더 악화
+  - `lam_grid_boundary_hit`(`DrtResult`)/`lambda_reliable`(summary.csv) 플래그는 유지 — 281개 전체 재실행 결과 16개(5.7%, N/불량 균등분포로 라벨 편향 없음) 그리드 경계 케이스만 부분적으로 걸러냄
+  - `docs/specs/`·`docs/plans/` 설계문서에 최종 결정 반영 완료
+- [x] **N-baseline z-score 피처 누수 수정 완료, 281개 전체 재실행으로 검증** — `features.py`: `add_n_baseline_feature()`(전체 데이터로 1회 계산, 누수) 제거 → `add_drt_tv_feature()`(raw `drt_tv`만 저장, 라벨 무관이라 안전) + `n_baseline_zscore(train_df, apply_df)`(fold-safe 원시함수, `train_classifier.py`가 CV 매 fold마다 새로 호출해야 함) 로 분리. 테스트 3개 작성·통과, 281개 샘플 전체 재실행 에러 0건 확인
 - [x] `features.py` 구현: `summary.csv` 재생성 + N-baseline 이상치 거리 피처 추가 (git branch `feat/2단계-ai-진단-이진분류기`, 아직 main 미병합 — vault에 반영 안 되어 있었음, 2026-08-20 확인)
 
 - [x] EIS→DRT 변환 파이프라인 기본 구현 (`drt_core.py`)
