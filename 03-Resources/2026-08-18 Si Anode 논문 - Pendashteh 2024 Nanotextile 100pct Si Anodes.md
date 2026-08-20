@@ -14,4 +14,4 @@
 - 나노와이어 네트워크 구조가 입자 간 접합저항을 낮추고, **사이클링 중 pulverization(미세분쇄)을 원천적으로 방지**한다고 보고 — 우리 쪽 volume expansion→short 문제와 직결되는 해결 사례
 
 ## 관련
-- [[2026-08-18 Notebook 필사 정리]] — 8/18 코인셀 실험 메모: "Silicon 100% 음극 → volume expansion 불가피 → short 감지가 목적"과 정확히 같은 소재 조건(100% Si)을 다루는 논문. Pulverization 방지 구조가 우리 쇼트 감지 실험의 비교군/참고사례로 유용할 수 있음
+- [[Notebook 필사 정리]] — 8/18 코인셀 실험 메모: "Silicon 100% 음극 → volume expansion 불가피 → short 감지가 목적"과 정확히 같은 소재 조건(100% Si)을 다루는 논문. Pulverization 방지 구조가 우리 쇼트 감지 실험의 비교군/참고사례로 유용할 수 있음

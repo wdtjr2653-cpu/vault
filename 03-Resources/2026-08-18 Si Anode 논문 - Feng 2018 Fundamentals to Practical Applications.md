@@ -42,4 +42,4 @@ Si 음극재 연구를 **① 견고한 구조 설계, ② Si 복합체, ③ 전�
 - [[2026-08-18 Si Anode 논문 - Jin 2017 Challenges and Recent Progress]] — 150nm 임계크기, pulverization/SEI 문제의식 공유. Jin 2017보다 범위가 넓고 실전 요소(전해질·바인더·풀셀)까지 포괄
 - [[2026-08-18 Si Anode 논문 - Chae 2017 Confronting Issues of Practical Implementation]] — "풀셀에서 봐야 진짜 문제가 보인다"는 문제의식이 이 논문의 5장(Silicon Full-Cell Designs)과 정확히 같은 결론
 - [[2026-08-18 Si Anode 논문 - Pendashteh 2024 Nanotextile 100pct Si Anodes]] — 이 논문이 소개한 1D Si NW 원리(Chan 2008)를 2024년에 나노텍스타일로 확장한 후속 연구
-- [[2026-08-18 Notebook 필사 정리]] — 8/18 코인셀 실험(Si 100%, volume expansion→short 감지)의 배경 이론 전체를 아우르는 참고자료
+- [[Notebook 필사 정리]] — 8/18 코인셀 실험(Si 100%, volume expansion→short 감지)의 배경 이론 전체를 아우르는 참고자료

@@ -35,5 +35,5 @@ Si 원자 1개가 Li 4개와 결합 가능 → 흑연(6개 탄소당 Li 1개) �
 지난 10년간 나노구조 설계로 pulverization·SEI 문제는 상당히 해결됐지만, **어느 구조도 초기CE·면적용량·단가 세 가지를 동시에 만족시키지 못함** — 앞으로는 이 셋을 함께 푸는 복합구조가 필요하다는 게 이 리뷰의 결론. 또한 대부분의 연구가 half-cell(Li metal 상대전극) 기준이라, 실제 상용화 평가엔 full-cell 성능 검증이 필수라고 지적.
 
 ## 관련
-- [[2026-08-18 Notebook 필사 정리]] — 8/14, 8/18 메모의 Si anode·volume expansion·pulverization·SEI·150nm 나노입자화 내용이 이 논문 원문과 정확히 대응
+- [[Notebook 필사 정리]] — 8/14, 8/18 메모의 Si anode·volume expansion·pulverization·SEI·150nm 나노입자화 내용이 이 논문 원문과 정확히 대응
 - [[2026-08-18 Si Anode 논문 - Pendashteh 2024 Nanotextile 100pct Si Anodes]] — 이 논문이 소개한 "나노와이어는 pulverization에 강하다"(Chan 2008 인용)는 원리를 2024년에 100% Si 나노와이어 텍스타일 구조로 확장 구현한 후속 연구

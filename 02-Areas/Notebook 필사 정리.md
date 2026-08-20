@@ -20,6 +20,7 @@
 - [IMG_8511.jpeg](<C:/Users/MONA/OneDrive - 모나일렉트릭 주식회사/바탕 화면/이정석/02-Areas/Notebook/IMG_8511.jpeg>)
 - [IMG_8512.jpeg](<C:/Users/MONA/OneDrive - 모나일렉트릭 주식회사/바탕 화면/이정석/02-Areas/Notebook/IMG_8512.jpeg>)
 - [IMG_8543.jpeg](<C:/Users/MONA/OneDrive - 모나일렉트릭 주식회사/바탕 화면/이정석/02-Areas/Notebook/IMG_8543.jpeg>)
+- [IMG_8547.jpeg](<C:/Users/MONA/OneDrive - 모나일렉트릭 주식회사/바탕 화면/이정석/02-Areas/Notebook/IMG_8547.jpeg>)
 
 ## 1. AI·데이터사이언스 스터디 (Titanic 데이터셋 실습)
 
@@ -51,6 +52,14 @@
 - 컬럼: Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked
 - Workflow 7단계: ①분류 → ②상관관계 분석 → ③데이터 변환 → ④결측치 보완 → ⑤이상치 제거/차팅 → ⑥새 feature 생성(예: SibSp+Parch=FamilySize) → ⑦분류/차팅
 - 실전 아이디어: Age 결측치 보완, Fare→1인당 환산, Cabin 첫 글자만 추출
+
+### 8/20 — 앙상블 모델(RandomForest/XGBoost) & 모델 평가
+- 모델 평가지표: MAE = mean_absolute_error
+- 트리 계열 앙상블 개념 다이어그램: ①단일 의사결정 트리 → ②랜덤포레스트(배깅) → ③XGBoost(그래디언트 부스팅)
+- SPARSE_output=True/False 옵션 메모: False일 때 np.ndarray로 처리 필요 — Pandas DataFrame이 그대로 처리되지 않는 이유 정리
+- Out of sample(OOS): test data / valid data 구분
+- Feature/Target 설계: Feature 약 22개(feature_x1~x22), Target은 분류 라벨(예: A/B/C-D 등) — Feature와 Target을 명확히 정리하는 것이 중요하다는 메모
+- RNN, CNN, CLF 등 모델 유형 비교 언급 (필체 일부 판독 불확실, 원본 대조 권장)
 
 ## 2. 회사 업무·기획 미팅 노트
 
@@ -89,6 +98,12 @@
 - TUV Nord Korea 등 인증기관 파악, ESS 시장 특허 동향
 - 국내 특허 출원 트렌드(2016·2019·2024년 등 시계열)
 - CLI 기반 데이터 조사, HTC Room / RTC 기간 도출식, CEO 미팅 관련
+
+### 8/20 — BMS 데이터 기반 AI 서비스 기획
+- BMS 데이터 처리 output을 json 포맷으로 정리, BMS data는 DB로 관리
+- Cloud 서버 후보 비교: AWS, Google, Naver
+- 공용 platform 형태로 데이터를 확보·활용하는 방향 논의
+- 채용/일정 관련 요일별 To-do 메모(8/24, 8/26, IRIS 등 언급) — 필체 판독이 어려운 부분이 많아 원본 사진 대조 필요
 
 ## 3. Si 음극재·DRT 연구 노트
 
