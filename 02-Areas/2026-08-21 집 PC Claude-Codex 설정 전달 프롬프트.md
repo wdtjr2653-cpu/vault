@@ -77,10 +77,21 @@ CLAUDE.md의 기존 사용자 정보와 규칙은 유지하면서, Codex의 AGEN
 공통 기준 문서의 수정이 필요하다고 판단되면 직접 수정하거나 push하지 말고 변경안만 제시해. Codex가 이미 수정한 파일을 동시에 다시 편집하지 마라.
 ```
 
+## 3. 두 설정 완료 후 공유 메일함 왕복 테스트
+
+아래 테스트는 **집 PC의 로컬 agentmemory 인스턴스 안에서만** 수행한다. 회사 PC의 신호 ID나 메모리 DB를 재사용하지 않는다.
+
+1. Codex가 매번 새로운 토큰(예: `HOME-SMOKE-YYYYMMDD-HHMMSS`)을 만들고 `memory_signal_send`로 `from=codex`, `to=claude`, `type=request` 요청을 보낸다.
+2. Claude가 `memory_signal_read(agentId=claude, unreadOnly=true)`로 요청을 읽고, 같은 스레드에 `from=claude`, `to=codex`, `type=response`, `replyTo=<요청 signal id>`로 `MAILBOX_OK <토큰>`을 정확히 회신한다.
+3. Codex가 `memory_signal_read(agentId=codex, threadId=<thread id>)`로 회신을 확인한다.
+4. 최종 텍스트 설명만 믿지 말고 **신호 기록의 sender, recipient, replyTo, threadId, 토큰 일치**로 PASS/FAIL을 판정한다. 파일·Git·설정은 이 테스트에서 수정하지 않는다.
+5. 요청 또는 회신이 안 보이면 두 에이전트가 같은 agentmemory 서버·포트·프로젝트 범위에 연결됐는지 먼저 비교한다. 회사 PC와 집 PC 사이에서 신호가 공유될 것으로 기대하지 않는다.
+
 ## 완료 확인
 
 - 두 에이전트가 현재 PC를 집 PC로 정확히 인식한다.
 - `AGENTS.md`와 `CLAUDE.md`의 공동 작업 규칙이 의미상 일치하고 중복이 없다.
 - 회사와 집의 로컬 agentmemory DB를 같은 저장소로 오인하지 않는다.
 - Git 커밋·push 전 로컬 변경을 다른 PC에서 보이는 정보로 간주하지 않는다.
+- 집 PC 로컬에서 Codex 요청 → Claude 회신 → Codex 수신 왕복 테스트가 신호 기록 기준으로 통과한다.
 - 이후 사용자는 작업을 한 에이전트에 먼저 요청하고, 그 에이전트가 단독 처리 또는 분담을 판단한다.
