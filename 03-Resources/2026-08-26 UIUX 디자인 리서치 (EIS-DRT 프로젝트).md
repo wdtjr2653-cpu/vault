@@ -69,4 +69,45 @@
 - [ ] 흑백 인쇄 시뮬레이션 확인 (그레이스케일 변환 테스트)
 
 ---
-*다음 사이클 예정 주제: 데스크톱 앱(Electron/PyQt/Tauri) UI 동향 → 모바일 현장 앱 패턴 → 다크모드 계측 UI → 온보딩·빈 상태*
+
+## 사이클 4 (2026-08-26 18:31) — 데스크톱 앱 프레임워크 UI 동향 (구현 선택지)
+
+### 1. Electron vs Tauri (2026 기준)
+- [비교 자료들](https://blog.openreplay.com/comparing-electron-tauri-desktop-applications/) 공통 결론: **Tauri가 신규 프로젝트의 기술적 우위** — 메모리 58~75%↓(유휴 ~180MB vs ~45MB), 설치본 ~165MB vs ~8MB, 콜드 스타트 3.2s vs 1.4s. Electron 강점은 프런트팀의 출시 속도·생태계 성숙도
+- Tauri는 OS 내장 WebView 사용(Chromium 미동봉) — 백엔드가 Rust지만 **사이드카로 파이썬 프로세스 실행 가능**
+- **시사점**: Claude Design이 뽑아준 React/HTML 코드를 그대로 쓰는 경로라면 **Tauri(웹 프런트 + drt_analysis 파이썬 사이드카)**가 현장 배포(가벼운 설치본, 낮은 사양 PC)에 유리. Electron은 개발 편의 우선일 때
+- 현장 진단 장비에 얹는 시나리오면 설치 용량·메모리가 실제 제약이 됨 — Tauri 우세
+
+### 2. PyQt/PySide 경로 (기존 GUI 개조)
+- [PythonGUIs 2026 가이드](https://www.pythonguis.com/faq/which-python-gui-library/): PyQt/PySide는 여전히 과학·계측 데스크톱의 최강 툴킷 — 하드웨어 연동·데이터 시각화 직결이 강점
+- 모던 스타일링은 한계 존재: Fusion 스타일 + [qtmodern](https://github.com/gmarull/qtmodern) 등으로 개선 가능하지만 **웹 수준의 디자인 자유도(인디고 램프, OKLCH, 카드 레이아웃)를 QSS로 재현하는 비용이 큼**
+- **시사점 — 구현 갈림길 정리**:
+  - **A안 (웹 프런트 + Tauri)**: Claude Design 코드 재사용 ↑, 디자인 충실도 100%, 파이썬은 사이드카/로컬 API — 신규 개발이지만 시안이 곧 코드라 실질 비용 낮음
+  - **B안 (기존 PyQt 개조)**: 기존 GUI 자산 재사용 ↑, 하드웨어 연동 코드 그대로 — 대신 디자인 시안은 "사양서"로만 쓰이고 QSS 재구현 비용 발생
+  - 판단 기준: 기존 PyQt GUI의 완성도·하드웨어 연동 코드량. **vault-36(엔진 세션)에 기존 GUI 규모 확인 후 결정 권장**
+
+### 사이클 4 액션 후보
+- [ ] 구현 프레임워크 결정 회의 안건: A안(Tauri+React) vs B안(PyQt 개조) — 기존 GUI 코드 규모 조사를 vault-36에 요청할지
+- [ ] A안 채택 시 Claude Design 코드 export 방법 확인
+
+---
+
+## 사이클 5 (2026-08-26 19:03) — 모바일 현장 앱 패턴
+
+### 1. 필드 서비스·점검 앱 UX 원칙
+- 공통 원칙([오프라인 우선 UX](https://medium.com/@mrsikandar08/designing-mobile-apps-for-field-teams-offline-first-ux-and-on-device-intelligence-4194ab9f2279), [MS Dynamics 필드서비스 UX](https://www.microsoft.com/en-us/dynamics-365/blog/it-professional/2023/10/27/transform-technician-experience-with-the-new-field-service-mobile-ux/)):
+  - **오프라인 우선**: 네트워크·동기화 상태 명시, 로컬 저장분 vs 동기화 완료분 구분 표시, 실패 시 복구 가능한 액션 제공
+  - **중단 내성**: 작업 중단 후 이어하기가 기본 — 현장은 항상 끊긴다
+  - **현장 물리 조건**: 야외 눈부심 대비 고대비 모드, **장갑 낀 손 터치 타깃 확대**, 엄지 존에 주요 액션 배치
+- **시사점**: 중고차 매매단지 현장의 이동형 진단 시나리오와 정확히 일치 — 진단 장비 옆 태블릿/폰으로 결과 확인·인증서 발급하는 흐름이라면 ① 측정→업로드 동기화 상태 표시 ② 야외 고대비(라이트 테마가 여기서도 필요) ③ 큰 터치 타깃이 필수 요건. **사업계획서의 "이동형 진단 시스템 현장 배치" 실증에서 실제로 부딪힐 UX 항목들**
+
+### 2. OBD·차량 진단 모바일 앱 관행
+- [OBD 앱 사례들](https://medium.com/@its.varavex/case-study-obd-app-on-board-diagnostics-ui-ux-21b9b35020cf): 배터리 전압 게이지 + 실시간 상태, 폴트 코드를 **일반인 언어로 번역해 표시**, 단순 레이아웃(비전문가 배려), 다크 모드 제공
+- **시사점**: 우리 콘솔은 엔지니어용(데이터 밀집)이지만, 실증 단계에서 **딜러·소비자용 뷰**가 필요해지면 이 문법을 따라야 함 — 판정 결과를 "이 배터리는 동급 대비 상위 30% 상태입니다" 같은 평이한 문장으로. Recurrent의 소비자 리포트가 같은 전략. **엔지니어 뷰/소비자 뷰 이원화**가 장기 로드맵 후보
+
+### 사이클 5 액션 후보
+- [ ] (장기) 소비자·딜러용 간이 결과 화면 — 판정을 평이한 문장+등급 게이지로 보여주는 뷰. 디지털 인증서 화면과 연결
+- [ ] 태블릿 브레이크포인트 시안 확인 — 현장 사용 시나리오면 1024px 레이아웃 점검 필요
+
+---
+*다음 사이클 예정 주제: 다크모드 계측 UI → 온보딩·빈 상태 → (신규 발굴: 데이터 테이블 UX, 키보드 단축키 체계 등)*
