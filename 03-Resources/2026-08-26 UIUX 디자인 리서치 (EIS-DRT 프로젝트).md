@@ -33,4 +33,40 @@
 - [ ] 알림/이벤트 이력·상관 탐색기·포트폴리오 뷰 — 확장 화면 로드맵 반영 여부
 
 ---
-*다음 사이클 예정 주제: 계측·과학 소프트웨어의 차트 인터랙션 패턴(줌·브러시·비교), 진단 리포트(PDF) 디자인, 데스크톱 앱(Electron/PyQt) UI 프레임워크 동향*
+
+## 사이클 2 (2026-08-26 17:28) — 계측·과학 SW 차트 인터랙션
+
+### 1. 과학 시각화 인터랙션 표준 패턴
+- 시각 탐색의 고전 원칙 = Shneiderman의 **"Overview first, zoom & filter, details-on-demand"** ([시계열 시각화 리뷰](https://arxiv.org/html/2507.14920v1)) — 전체 개요 → 브러시로 관심 구간 선택 → 상세 뷰. 우리 콘솔은 "배치 요약 → 파일 선택 → 개별 진단"으로 이미 이 구조를 따름
+- **연동 브러싱(linked brushing)**: 한 차트에서 구간·점을 선택하면 연결된 다른 뷰에서 같은 대상이 하이라이트 ([Observable 사례](https://observablehq.com/blog/linked-brushing)) — 줌·팬도 뷰 간 동기화가 표준
+- **시사점 (액션 후보)**: Nyquist ↔ DRT **양방향 연동 브러싱** — Nyquist에서 주파수 구간을 드래그하면 DRT의 대응 τ 구간이 하이라이트(τ=1/2πf 매핑), 반대도 동일. 두 차트가 "같은 데이터의 두 얼굴"임을 인터랙션으로 증명하는 기능이라 시연 효과 큼. 판정 근거↔피크 연동의 확장판
+
+### 2. 오실로스코프 UI의 커서 측정 관행
+- 계측기 표준: **듀얼 커서** — 파형 위 세로/가로 마커 2개를 드래그해 두 지점의 값과 **차이값(ΔV, ΔX)을 상시 리드아웃**으로 표시 ([EDN 커서 해설](https://www.edn.com/oscilloscope-cursors-complement-other-measurement-tools/), [Tektronix 5 Series UI](https://www.tek.com/en/blog/inside-5-series-mso-re-inventing-oscilloscope-user-interface))
+- 리드아웃은 플롯 모서리에 고정 표시, 측정 결과는 우측 결과 바에 블록으로 축적 — Teledyne LeCroy MAUI도 동일 패턴
+- **시사점 (액션 후보)**: Nyquist·DRT에 **Δ커서 모드** 추가 — 커서 2개를 놓으면 ΔZ′(mΩ), Δτ(decade), Δγ 차이값이 리드아웃으로 표시. "이 셀과 기준의 R_ct 차이가 정확히 몇 mΩ인가"를 화면에서 바로 재는 기능 = 계측 장비 사용자(정비사·엔지니어)에게 익숙한 문법이라 학습 비용 없음
+
+### 사이클 2 액션 후보
+- [ ] Nyquist↔DRT 연동 브러싱 (주파수↔τ 매핑 하이라이트)
+- [ ] 듀얼 Δ커서 측정 모드 + 모서리 리드아웃
+
+---
+
+## 사이클 3 (2026-08-26 18:00) — 진단 리포트(PDF) 디자인
+
+### 1. 차량·배터리 점검 리포트 구조 관행
+- 업계 표준 구조([배터리 점검 리포트 템플릿](https://oxmaint.com/industries/fleet-management/battery-inspection-guide), [SafetyCulture 차량 점검](https://safetyculture.com/checklists/safety/vehicle-inspection)): **① 식별정보(차량/배터리·일시·검사자) → ② 항목별 판정(Pass/Fail/N/A 체크) → ③ 측정값 기록 → ④ 관찰·코멘트 자유기입 → ⑤ 서명/승인**
+- 현장용은 인쇄 전제(print-ready PDF) + 웹링크 공유 병행이 표준
+- **시사점**: 우리 "진단 리포트 내보내기"의 목차 초안 = ① 셀·측정 식별(파일명·장비·세션·온도) ② 종합 판정 배지+신뢰도 ③ 수치 테이블(R_ohm·R_ct·SoH, 기준 대비 편차) ④ Nyquist·DRT 차트(라이트 테마 필수 — 인쇄용) ⑤ 판정 근거 기여도 ⑥ 수치 신뢰도(KK·식별가능성) ⑦ 면책 문구·검사자 서명란. **⑥·⑦은 경쟁 리포트에 없는 차별 요소**(AVILOO 인증서 대비 투명성 우위)
+
+### 2. 인쇄물 타이포·차트 가독성 기준
+- 본문 10–12pt, 최소 6pt(인쇄)/9pt(화면), 좌측 정렬, 고대비 저채도 본문 ([데이터 시각화 타이포 표준](https://xdgov.github.io/data-design-standards/components/typography), [Urban Institute 스타일가이드](https://urbaninstitute.github.io/graphics-styleguide/))
+- 수치는 자릿수 콤마+소수점 제한(반올림), 차트 설명 텍스트는 **이미지 안이 아니라 문서 본문에** 배치(접근성·검색성)
+- **시사점 (액션 후보)**: PDF 리포트는 **다크 테마 금지·라이트 전용** + 차트 라벨을 벡터 텍스트로. 흑백 인쇄 대비 확인 필요 — 인디고/앰버/레드가 그레이스케일에서 명도로 구분되는지(현재 램프는 명도 차 기반이라 유리). 사업계획서의 "디지털 인증서" 산출물 디자인과 직결되는 항목
+
+### 사이클 3 액션 후보
+- [ ] 리포트 목차 7단 구성(위 ①~⑦)으로 "보고서 내보내기" 화면/PDF 시안 요청
+- [ ] 흑백 인쇄 시뮬레이션 확인 (그레이스케일 변환 테스트)
+
+---
+*다음 사이클 예정 주제: 데스크톱 앱(Electron/PyQt/Tauri) UI 동향 → 모바일 현장 앱 패턴 → 다크모드 계측 UI → 온보딩·빈 상태*
