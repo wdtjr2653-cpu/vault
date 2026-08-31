@@ -726,4 +726,22 @@
 - [ ] 필터 결과 0건 빈 상태 (필터 해제 유도) — C7 빈 상태 목록에 추가
 
 ---
-*다음 사이클(39): 신규 주제 1건 조사(후보: 단위·수치 표기 규칙 — 유효숫자·mΩ/Ω 전환·지수 표기) + vault 커밋·푸시. 30분 간격, 사용자 별도 지침 시까지.*
+
+## 사이클 39 (2026-08-31) — 단위·수치 표기 규칙 (유효숫자·정렬·SI)
+
+### 1. 표 안의 숫자 타이포 규칙
+- 표준([Design Better Data Tables](https://medium.com/mission-log/design-better-data-tables-430a30a00d8c), [A List Apart 표 타이포](https://alistapart.com/article/web-typography-tables/), [tabular-nums](https://theosoti.com/short/tabular-nums/)): ① **tabular numerals**(고정폭 숫자)로 세로 정렬 — CSS `font-variant-numeric: tabular-nums` 한 줄 ② 수치 열은 **우측 정렬**(자릿수 다르면 소수점 정렬), 가운데 정렬 금지 ③ **열 내 소수 자리 통일** — 같은 열에서 18.2와 18.25가 섞이면 비교 불가, 1~2자리가 일반 규칙
+- **시사점**: 숫자 폰트로 IBM Plex Mono를 이미 확정(모노스페이스라 tabular 문제 자동 해결) — 남은 건 **자리수 규칙 명문화**: R값(R_ohm·R_ct·R_diff)은 mΩ 소수 1자리(18.2 mΩ), 신뢰도 % 소수 1자리, 온도 정수. 측정 원자료의 초과 정밀도(18.2473…)는 툴팁·리포트 상세에서만
+
+### 2. SI 표기 규칙 (NIST SP 811) — 계측 도구의 신뢰 디테일
+- 공식 규칙([NIST SI 작성 가이드](https://www.nist.gov/pml/owm/writing-si-metric-system-units), [SP 811 7장](https://nist.gov/pml/special-publication-811/nist-guide-si-chapter-7-rules-and-style-conventions-expressing-values)): **숫자와 단위 기호 사이 공백 필수** — "18.2 mΩ", "25 °C"(°C도 공백, 예외는 각도 °′″뿐). 단위 기호는 정체(기울임 금지), 복수형 없음
+- **시사점** (틀리면 전문가 사용자에게 바로 들키는 부분): ① 앱 전역 **mΩ 고정**(엔진 Ω→프런트 변환, 합의 사양) — 축·툴팁·카드·리포트 표기 통일 ② 주파수는 **접두어 자동 전환**(10 kHz / 1 Hz / 32 mHz — "10000 Hz" 금지) ③ 지수 표기는 **λ에만 허용**(1.2×10⁻³, 고급 정보 영역) — 일반 화면에서 지수 표기는 검사원에게 부담 ④ τ 축의 10ⁿ 라벨은 유지(로그 축 관행)
+- 이 규칙 전부가 **디자인 토큰(C22)과 같은 층위의 "수치 표기 토큰"** — 구현 시 포맷 함수 하나(`formatR()`, `formatFreq()`)로 중앙화하면 화면·리포트·내보내기 CSV가 자동 일관
+
+### 사이클 39 액션 후보
+- [ ] 수치 표기 규칙표 확정: R값 mΩ 소수 1자리 / 신뢰도 % 1자리 / 온도 정수 / 열 내 자리 통일·우측 정렬·tabular
+- [ ] SI 표기 준수: 숫자-단위 공백("18.2 mΩ", "25 °C"), 주파수 접두어 자동 전환, 지수 표기는 λ 한정
+- [ ] (구현) 포맷 함수 중앙화 (formatR/formatFreq 등) — 화면·리포트·CSV 내보내기 표기 단일 소스
+
+---
+*다음 사이클(40): 신규 주제 1건 조사(후보: 차트 툴팁·호버 리드아웃 설계 — 다중 곡선에서 값 읽기) + vault 커밋·푸시. 30분 간격, 사용자 별도 지침 시까지.*
