@@ -665,4 +665,24 @@
 - [ ] (엔진 협의) measured_at 메타 필드 확장 — 이력 뷰 전제 조건, vault-36 전달 필요
 
 ---
-*다음 사이클(36): 신규 주제 1건 조사(후보: 인쇄·PDF 렌더링 기술 스택 — 리포트 구현 방식) + vault 커밋·푸시. 30분 간격, 사용자 별도 지침 시까지.*
+
+## 사이클 36 (2026-08-31) — 인쇄·PDF 렌더링 기술 스택 (진단 리포트 구현)
+
+### 1. PDF 생성 3계열 비교 (2026 기준)
+- 계열 정리([JS PDF 라이브러리 가이드](https://www.nutrient.io/blog/javascript-pdf-libraries/), [Puppeteer vs react-pdf 프로덕션 비교](https://dev.to/iurii_rogulia/pdf-generation-on-the-server-puppeteer-vs-react-pdfrenderer-a-production-comparison-44cg)):
+  - ① **HTML+print CSS → (헤드리스) 브라우저 print-to-PDF**: 실제 페이지를 그대로 렌더 — **SVG·복잡한 스타일 충실도 최고, 화면과 리포트의 코드 중복 최소**. 50~100쪽 이상에서 메모리 한계(우리 리포트는 수 쪽이라 무관)
+  - ② **@react-pdf/renderer (JSX 선언형)**: 페이지 제어 좋지만 **CSS 서브셋만 지원(Grid 불가, 의사선택자 없음)** — 차트를 별도 재구현해야 해서 화면 SVG 재사용 불가
+  - ③ pdfkit류 저수준 라이브러리: 좌표 직접 그리기 — 유지비 최악, 비채택
+- **시사점**: 우리 조건(데스크톱 오프라인·차트 SVG 확정(C25)·리포트 7단 구성(C3)·브랜드 템플릿(C26))에서는 **① HTML 리포트 템플릿 + print CSS 단일 소스**가 정답 — 화면에 이미 그린 SVG 차트를 리포트에 그대로 재사용, 흑백 인쇄 시뮬레이션(C3)도 print CSS 미디어 쿼리로 자연 해결
+
+### 2. 데스크톱 프레임워크별 PDF 내보내기 격차 ★ (C4 결정에 새 평가 축)
+- **Qt/PyQt**: `QWebEnginePage::printToPdf()` **내장**([Qt 포럼](https://forum.qt.io/topic/126639/qtwebengine-synchroneous-printtopdf)) — HTML 로드 완료 후 호출, 비동기 처리만 주의
+- **Tauri**: **print API 자체가 없음**([tauri#4917](https://github.com/tauri-apps/tauri/issues/4917), [wry#707](https://github.com/tauri-apps/wry/issues/707)) — Windows 한정으로 WebView2의 `PrintToPdfAsync` 직접 호출 우회 가능, 크로스플랫폼은 wkhtmltopdf 동봉 같은 차선책뿐
+- **시사점**: 리포트가 핵심 산출물(인증서 포함)인 우리 도구에서 이 격차는 **프레임워크 결정(C4: Tauri+React vs PyQt)의 실질 변수** — Tauri 선택 시 "Windows 전용 배포 + WebView2 PrintToPdfAsync"를 전제해야 하고, PyQt 선택 시 PDF는 공짜. 단, 배포가 Windows 전용이면(사내·거래기관 PC 대부분 Windows) Tauri 경로도 실용적
+
+### 사이클 36 액션 후보
+- [ ] (구현) 리포트 = HTML 템플릿 + print CSS 단일 소스 — 화면 SVG 차트 재사용, 흑백 인쇄는 print 미디어 쿼리로
+- [ ] (구현) C4 프레임워크 결정에 "PDF 내보내기 성숙도" 평가 축 추가 (PyQt printToPdf 내장 vs Tauri는 Windows WebView2 우회 필요)
+
+---
+*다음 사이클(37): 신규 주제 1건 조사(후보: 파일 업로드·드래그앤드롭 UX — 측정 CSV 일괄 투입 흐름) + vault 커밋·푸시. 30분 간격, 사용자 별도 지침 시까지.*
