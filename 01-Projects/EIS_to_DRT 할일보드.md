@@ -6,11 +6,13 @@ kanban-plugin: board
 
 ## 할 일
 
-- [ ] **[CNLS 후속] 281개 전체 데이터로 등가회로 피팅(`ecm_fit.fit_ecm`) 수렴 안정성·실패율 검증** — 지금은 3개 파일로만 육안 검증(아래 완료 항목). 전체 배치로 돌려 R² 분포, 수렴 실패율, Warburg σ=0으로 나오는 비율(측정 주파수 하한 부족과 연관 가능) 확인 필요
-- [ ] **[CNLS 후속] `summary.csv`에 CNLS 기반 피처(R_sei/R_ct/n_sei/n_ct/σ_w) 추가 여부 검토** — 분류기 feature로 편입하면 DRT 피크 면적 기반 피처보다 판별력이 나을 수 있음(281개 검증 이후 판단)
+- [ ] **[분류기 v2] 셀 단위 그룹 CV + 반복 CV 신뢰구간** — v1의 행 단위 5-Fold는 같은 셀의 반복측정(H-14 1~10 등)이 폴드를 가로질러 낙관적. StratifiedGroupKFold(셀 ID 기준) + 반복 CV로 recall 신뢰구간 보고(기존 Nested CV 요구와 묶음)
+- [ ] **[분류기 v2] `cnls_n_2` 피처 병합** — 8/26 발견(n₂<0.6: N군 20% vs 불량군 53%), v1 상위 피처(chord/Rp 저항 총량 계열)와 정보 비중복이라 상호보완 기대. validation_summary.csv를 학습 테이블에 병합 + `feature_eligible` 필터 적용 설계 필요
+- [ ] **[데이터 품질] 형상 outlier N군 5건(N-9/16/21/23/29) 육안 확인** — 2026-08-31 형상 이상 감지(그룹 MAD)가 지목. 스펙트럼이 유별난 "정상" 라벨이라 학습 제외 후보
+- [ ] **[GUI] `diagnose_cell()` 연동** — 단일 셀 판정 버튼(N/불량/판정불가/측정 재시도 필요 표시)
+- [ ] **[CNLS 후속] `summary.csv`에 CNLS 기반 피처(R_sei/R_ct/n_sei/n_ct/σ_w) 추가 여부 검토** — 위 cnls_n_2 병합 항목의 확장판. 3RQ 파일은 상관쌍 수(cnls_correlated_pairs)를 함께 볼 것(§7-5)
 - [ ] `peak_regions()` 결과(Rohm/Rsei/Rct/W 구간별 저항)를 `summary.csv`에도 피처로 추가할지 검토 — 현재는 GUI 표시용으로만 연결됨, 분류기 feature로 편입하면 판별력 개선 가능성
 - [ ] **측정팀과 협의 필요 + 분류기 설계에 반영 검토**: 저주파측 미해결이 N(정상)셀에 편중되는 현상(아래 완료 항목 참고)의 원인 확인 — 온도/SOC/측정 시점 등 실제 측정 조건이 N군과 불량군 사이에 체계적으로 달랐는지 측정팀에 문의 필요. 원인이 측정 조건 차이라면 프로토콜 통일이 먼저고, 원인이 "정상 셀이 진짜로 더 느린 확산 과정을 가진다"는 물리적 현상이라면 오히려 유용한 판별 신호일 수 있음 — 둘 다 도메인 지식 없이는 내가 판단할 수 없는 영역
-- [ ] `train_classifier.py` 구현 — `docs/specs/2026-08-19-2단계-ai-진단-분류기-design.md`의 "2026-08-20 갱신" 섹션(오늘 새로 작성) + `docs/plans/...plan.md` 상단 안내를 먼저 읽을 것. 핵심: `n_baseline_zscore()`를 **CV 매 fold 안에서** 호출(전역 1회 호출 금지) + **Nested CV**(단순 CV는 n=282 소표본에서 낙관적 편향) + 반복 stratified CV로 recall 신뢰구간 보고 + **feature 목록에서 `lambda_star` 제외** + N셀 편중 리스크(위 항목) 인지. **이 항목은 새 파일을 만드는 상당한 작업이라 사용자와 함께(모델 선택·평가 기준 등 확인하며) 진행하는 게 적절하다고 판단해 자율진행 범위에서는 착수하지 않음**
 - [ ] **[별도 R&D 과제로 분리] λ 선택법을 GCV 계열로 교체** — 제약(non-negativity) 있는 최소자승 문제의 유효자유도 근사가 필요한 상당한 수치해석 작업. 참고: GCV/modified GCV/robust GCV 등 비교 문헌([DRTtools, ACS Electrochemistry 2025](https://pubs.acs.org/doi/10.1021/acselectrochem.5c00334)), Bayesian DRT(MCMC 불확실도 정량화)([Adaptive DRT Bayesian Mixtures, JPCC](https://pubs.acs.org/doi/10.1021/acs.jpcc.5c04766))
 - [ ] 향후 신규 데이터 수집 시 그룹당 일부 셀에 2~3회 반복측정 프로토콜 반영 (실제 실행은 측정팀 협의 필요)
 - [ ] SOH 예측용 신규 데이터 수집 실험 설계 (동일 셀에 EIS/DRT + 실측 용량검사 페어링) — 측정팀 협의 필요
@@ -21,6 +23,13 @@ kanban-plugin: board
 
 ## 완료
 
+- [x] **[2026-08-31] 분류기 v1 완성 + 엔진 견고화 마감 — 계획서 2벌 전부 소진** ([[2026-08-31 EIS-DRT 분류기 v1 완성 및 엔진 견고화]] 참조)
+  - `train_classifier.py`(Task 3~6): 폴드-안전 N-기준선(전역 z-score 금지, 폴드마다 재계산 — 상수 이동 불변성 테스트로 증명), `lambda_star` 제외(8/20 결정 준수). 281개 OOF: **불량 재현율 100%, N 오탐 1건, 판정불가 0건**. 중요도 chord 0.31/Rp 0.23/n_baseline_z 0.16
+  - `diagnose.py`(Task 7): 단일 셀 추론 — N/불량/판정불가/측정 재시도 필요. 스모크: N-1_1→N(0.0), A-12_1→불량(1.0)
+  - 극좌표·각주파수 CSV 입력(Task 1~2), N-cap(k≤N/6)+LOW_POINT_DENSITY, 직렬항 민감도(SERIES_TERM_SENSITIVE, 실측 3건), 형상 이상 감지(RQ별 그룹 MAD+하한, 65→35건 — Test H-14 글리치 세션 9건 포착)
+  - 배치 재검증: 8/26 기준선 완전 재현(모델 선택 변경 0건, 피처 190 유지), MODEL_AMBIGUOUS 실측 81건
+  - 미적용 요구(위 할 일로 이관): Nested CV·반복 CV 신뢰구간 → 셀 단위 그룹 CV와 묶어 v2
+- [x] **[CNLS 후속] 281개 전체 등가회로 피팅 검증 — 2026-08-26 완료** (Task 3~5 견고화로 해소: 경계 281→11건, R² min 0.997, 수렴 실패 0건, σ_w=0 강제 문제는 모델 선택 도입으로 소멸)
 - [x] **오늘 코드 변경사항 git 커밋 완료** (`feat/2단계-ai-진단-이진분류기` 브랜치, 커밋 `23babce`) — `gui_app.py`/`ecm_fit.py`(신규), `batch_process.py`/`drt_core.py`/`features.py`/`docs/plans`·`docs/specs`(수정) 9개 파일, output/plots 재생성 PNG 281개·summary.csv는 데이터 산출물이라 커밋 제외
 - [x] **[핵심 R&D 1차 구현] 등가회로 비선형 피팅(CNLS)으로 Rsei/Rct 세분화 정량화 — `ecm_fit.py` 신규 (2026-08-20)**
   - 사용자가 방향 확정(등가회로 비선형 피팅, AskUserQuestion으로 확인) 후 구현. R0+jωL0(기존 DRT 추정치를 그대로 고정)+Rsei요소+Rct요소+Warburg 4요소 모델을 raw 임피던스에 직접 비선형최소자승(scipy `least_squares`)으로 피팅 — DRT처럼 정규화로 인해 봉우리가 뭉개지는 문제 자체가 없는 독립적인 방법
