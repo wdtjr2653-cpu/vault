@@ -20,7 +20,7 @@ kanban-plugin: board
 
 ## 완료
 
-- [x] **[2026-09-02] 배치 재실행 — `summary.csv`에 λ 붕괴 컬럼 반영 완료** — 281/281, 오류 0. `lambda_min_boundary_hit` True 23건(예상치 일치: N 4건 + 불량 19건), 최대측 `lambda_reliable` False 16건, 두 플래그 중복 0건(상호 배타 확인). 주의: `validation_summary.csv`는 `validation_batch.py` 별도 실행 필요(여긴 미반영)
+- [x] **[2026-09-02] 배치 재실행 — `summary.csv`에 λ 붕괴 컬럼 반영 완료** — 281/281, 오류 0. `lambda_min_boundary_hit` True 23건(예상치 일치: N 4건 + 불량 19건), 최대측 `lambda_reliable` False 16건, 두 플래그 중복 0건(상호 배타 확인). `validation_summary.csv`도 재실행 완료 — `LAMBDA_MIN_BOUNDARY` 23건 반영 확인(품질 PASS 238/WARN 32/FAIL 11, 예외 0)
 - [x] **[2026-09-01] GUI `diagnose_cell()` 연동** (커밋 `5eb1bec`) — 결과 카드에 "AI 진단" 버튼. classifier_v2로 판정 4종(N/불량/판정불가/측정 재시도 필요) + 불량확률을 색상 라벨로 표시, 셀 전환 시 초기화. **핵심 주의점**: 학습 피처(chord_ohm)는 전처리 전 원시 배열 기준이라 GUI의 KK 절단된 result 배열을 그대로 넘기면 안 됨 — CSV 재파싱해 원시 스펙트럼 전달. 스모크: N-1_1→N(2%), A-12_1→불량(100%)
 - [x] **[2026-09-01] λ 최소측 경계 플래그(λ 붕괴 감지)** (커밋 `0bc0678`) — 23/281 파일(N-9/16/21/29 포함)이 정확히 grid[1+offset]=3.67e-7에 몰림 = 원시 Menger corner가 탐색 바닥(index 1)에 포화. `lam_grid_min_boundary_hit` 필드 + `LAMBDA_MIN_BOUNDARY` WARN + summary `lambda_min_boundary_hit` 컬럼 + GUI λ 신뢰 문구. 실측: 붕괴 4개만 True, 정상·최대측 경계 셀 False. 테스트 88+12 전체 통과
 - [x] **[2026-08-31] v2.1 — cnls_n_2 피처 제외(사용자 결정) + N군 형상 outlier 육안 확인** (커밋 `42cbbd6`)
