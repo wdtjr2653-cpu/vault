@@ -8,7 +8,6 @@ kanban-plugin: board
 
 - [ ] **[CNLS 후속] `summary.csv`에 CNLS 기반 피처(R_sei/R_ct/n_sei/n_ct/σ_w) 추가 여부 검토** — 위 cnls_n_2 병합 항목의 확장판. 3RQ 파일은 상관쌍 수(cnls_correlated_pairs)를 함께 볼 것(§7-5)
 - [ ] `peak_regions()` 결과(Rohm/Rsei/Rct/W 구간별 저항)를 `summary.csv`에도 피처로 추가할지 검토 — 현재는 GUI 표시용으로만 연결됨, 분류기 feature로 편입하면 판별력 개선 가능성
-- [ ] **저주파측 미해결의 N셀 편중 — 데이터만으로 검토(측정팀 없음, 2026-09-02)**: 측정 조건 확인이 불가하므로, 데이터 내부 검증으로 전환 — 전역 τ shift 구분 로직(τ shift 검증 4번)이 구현되면 "측정 조건 의심" 플래그로 간접 탐지 가능. 편중이 전역 shift와 동반되면 측정 조건 차이 쪽, 아니면 물리 신호 쪽 증거
 - [ ] **[별도 R&D 과제로 분리] λ 선택법을 GCV 계열로 교체** — 제약(non-negativity) 있는 최소자승 문제의 유효자유도 근사가 필요한 상당한 수치해석 작업. 참고: GCV/modified GCV/robust GCV 등 비교 문헌([DRTtools, ACS Electrochemistry 2025](https://pubs.acs.org/doi/10.1021/acselectrochem.5c00334)), Bayesian DRT(MCMC 불확실도 정량화)([Adaptive DRT Bayesian Mixtures, JPCC](https://pubs.acs.org/doi/10.1021/acs.jpcc.5c04766))
 - [ ] 향후 신규 데이터 수집 시 그룹당 일부 셀에 2~3회 반복측정 프로토콜 반영 (실제 실행은 측정팀 협의 필요)
 - [ ] SOH 예측용 신규 데이터 수집 실험 설계 (동일 셀에 EIS/DRT + 실측 용량검사 페어링) — 측정팀 협의 필요
@@ -19,6 +18,12 @@ kanban-plugin: board
 
 ## 완료
 
+- [x] **[2026-09-03] 저주파측 미해결 N셀 편중 × 전역 τ shift 동반 검증 — 전역 shift 동반 없음, 물리 신호 쪽 증거로 결론** (배치 캐시 `output/tau_gamma` 281개 재분석, 스크립트 `scratchpad/lowf_vs_taushift.py`)
+  - 심각(저주파 미해결 Rp 비중 >50%) 11건 = N 10 + 불량E 1 — 8/20 발견 정확히 재현(불량E는 E-29_1로 특정)
+  - **심각 N 10건 전부 tau_shift class = none** (d_global 중앙값 −0.055, 임계 0.15 대비 1/3 수준) — 온도 등 측정 조건 차이의 서명(전 대역 일괄 이동) 없음
+  - 전체 분포: N 40건 전부 none / 불량 241건 전부 local(주로 lowf−, d_lowf 중앙값 −0.23) — v3.1의 cent_lowf 중요도 1위와 정합. 불량셀은 저주파 질량이 안쪽으로 당겨져 측정창 안에서 해소되므로 미해결이 드물고, N셀은 실제로 더 느린 확산(τ가 측정창 밖)을 가진다는 해석이 지지됨
+  - ⚠ 주의: 기준선이 N셀 중앙값이라 "N=none"은 부분적으로 구성상 당연 — 그래서 심각 N 10건을 나머지 N 30건과 비교했고(d_lowf −0.057 vs +0.008), 차이가 robustSD 2배 이내로 경미해 결론 유지
+  - 남는 사실: N셀 Rp 과소추정 아티팩트 자체는 여전히 존재(측정창 한계). 다만 원인이 측정 조건 불일치라는 증거는 없음 — 해소책은 기존 항목(저주파 하한 확장 협의)대로
 - [x] **[2026-09-02] 분류기 v3 — τ shift 대역 centroid 3피처 편입** (커밋 `ffcad75`, 105/105) — cent_sei/ct/lowf를 summary·학습·추론에 추가. 10회 반복 그룹 CV: 불량 recall 1.000 유지, **N recall 0.945→0.997**. cent_lowf(0.255)·cent_ct(0.205)가 중요도 1·2위. 임계 low 0.31/high 0.52로 변경(디자인 노트 플래그 A 갱신됨). **상습 오탐 N-24·N-8 해소**(확률 0.08로 확정 N — 라벨 재확인 불필요해짐, 할 일에서 제거). cent_sei는 **v3.1(2026-09-03)에서 제거 확정(사용자 결정)** — 12피처, 불량·N recall 모두 1.000 [1.000, 1.000] 완전 무오류, 임계 low 0.30/high 0.54
 - [x] **[2026-09-02] 분석 실패 셀 최소 JSON(플래그 B)** (커밋 `781615b`) — export_json이 죽는 대신 6키 최소 JSON(원시 nyquist 유지, drt/features null, ANALYSIS_FAILED FAIL 경고) 저장. UI 분기 기준은 `drt === null`
 - [x] **[2026-09-02] 배치 산출물 데이터 커밋** (커밋 `345ec85`) — plots 281장 + summary.csv(λ붕괴·drt_tv·cent_* 컬럼). ⚠ 교훈: **배치 정식 진입점은 `features.py`** — `batch_process.py` 직접 실행하면 drt_tv 컬럼이 빠져 학습이 깨진다(2026-09-02 실측)
