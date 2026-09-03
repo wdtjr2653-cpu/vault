@@ -17,8 +17,9 @@ kanban-plugin: board
 
 - [ ] **[2026-09-03 착수] 프런트 구현 — 디자인 코드 ↔ 엔진 JSON 연결** (역할: 구현=엔진 세션, 시안 검수=디자인 세션 — 디자인 노트에 정리됨)
   - 완료: `frontend/warning_messages.ko.json`(경고 29종 한국어 매핑) + `output/json_dev/` 실측 JSON 30셀 개발 세트·manifest (커밋 `5433797`; 30/30 계약 통과, 판정-라벨 일치 100%, PASS 23/WARN 3/FAIL 4)
-  - **차단 중: 디자인 코드 대기** — 디자인 세션에 `frontend/design_export/`로 전달 요청함(형식·의존성 명시 포함). 도착하면 JSON 바인딩 시작
-  - 이후: 통합 → 캡처를 디자인 노트에 올려 검수 루프 → 30셀 PDF 렌더 성능 점검
+  - **[2026-09-03] Dark 콘솔 통합 v1 완료** (커밋 `51325db`) — design_export 스냅샷 무수정 보존 + `apply_patch.py` 17개 패치로 통합판 생성 + `data_adapter.js` 매핑. 30셀 전수 클릭 콘솔 에러 0건. 시안의 실데이터 비호환 2건(피크 3개 가정 크래시→탭 프리즈, -6..2 균일 도메인 가정) 패치로 해결. 실행: repo 루트 `python -m http.server 8123` → `/frontend/app/console-dark.dc.html`
+  - 검수 요청 + 잔여 이슈 5건(기준선 오버레이·KK 잔차 수치·헤더 데모 문구·확산 ΣR 0 표기·Light/Report 미통합)을 디자인 노트에 올림 — 디자인 세션 응답 대기
+  - 이후: 디자인 검수 반영 → Light·Report 통합(같은 패치 방식) → 30셀 PDF 렌더 성능 점검
 
 
 ## 완료
