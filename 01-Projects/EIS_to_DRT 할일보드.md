@@ -20,7 +20,8 @@ kanban-plugin: board
   - **[2026-09-03] Dark 콘솔 통합 v1 완료** (커밋 `51325db`) — design_export 스냅샷 무수정 보존 + `apply_patch.py` 17개 패치로 통합판 생성 + `data_adapter.js` 매핑. 30셀 전수 클릭 콘솔 에러 0건. 시안의 실데이터 비호환 2건(피크 3개 가정 크래시→탭 프리즈, -6..2 균일 도메인 가정) 패치로 해결. 실행: repo 루트 `python -m http.server 8123` → `/frontend/app/console-dark.dc.html`
   - 검수 요청 + 잔여 이슈 5건(기준선 오버레이·KK 잔차 수치·헤더 데모 문구·확산 ΣR 0 표기·Light/Report 미통합)을 디자인 노트에 올림 — 디자인 세션 응답 대기
   - **[2026-09-03] Light·Report 통합 완료** (커밋 `e473fbd`) — apply_patch.py가 3산출물 생성(dark 17/light 19/report 15패치). Report도 동일 비호환(피크 3개·고정 도메인) + Nyquist 고정 눈금 문제 수정. **30셀 PDF 렌더 성능 점검 완료: 31페이지 DOM 9,072노드·SVG 91개 — 최적화 불필요 판단**
-  - 이후: 디자인 검수 응답 반영(잔여 이슈 5건 중 Light/Report·PDF 성능 2건 해소, 3건 대기)
+  - **[2026-09-04] 디자인 검수 답변 전면 반영 완료** — 엔진 JSON 확장(quality.kk_residual_pct·meta.analyzed_at/source_dir·diagnosis.model_version) + **baseline.json 신설**(N군 40셀 중앙값 대표 곡선, `make_baseline_json.py`) + 30셀 재수출(생성기 `make_json_dev.py` repo 이동). 프런트: 기준선 실측 오버레이·비교 문구 실값, ΣR<0.05 mΩ 값·% "—" 동반, 헤더·모델버전·λ·컷오프·KK 잔차·리포트 문서번호/일시/파일명 전부 실값. 디자인 9/4 재수출(비호환 2건+라벨 충돌 자체 해결)에 맞춰 apply_patch.py 재작성(중복 패치 5건 제거, dark 25/light 27/report 32패치). 30셀 순회 에러 0건
+  - 이후: 디자인 2차 검수 응답 대기 — 판단 요청 1건(차트 대역 면적 vs 패널 region R 근거 통일) + 경미 2건(대역 스트립 라벨 밀착, _ds_bundle.js 기존 SyntaxError)
 
 
 ## 완료
