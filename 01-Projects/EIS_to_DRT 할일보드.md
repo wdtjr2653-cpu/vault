@@ -23,7 +23,9 @@ kanban-plugin: board
   - **[2026-09-04] 디자인 검수 답변 전면 반영 완료** — 엔진 JSON 확장(quality.kk_residual_pct·meta.analyzed_at/source_dir·diagnosis.model_version) + **baseline.json 신설**(N군 40셀 중앙값 대표 곡선, `make_baseline_json.py`) + 30셀 재수출(생성기 `make_json_dev.py` repo 이동). 프런트: 기준선 실측 오버레이·비교 문구 실값, ΣR<0.05 mΩ 값·% "—" 동반, 헤더·모델버전·λ·컷오프·KK 잔차·리포트 문서번호/일시/파일명 전부 실값. 디자인 9/4 재수출(비호환 2건+라벨 충돌 자체 해결)에 맞춰 apply_patch.py 재작성(중복 패치 5건 제거, dark 25/light 27/report 32패치). 30셀 순회 에러 0건
   - **[2026-09-04 v4] 2차 검수 판단 반영 완료** (커밋 `8c0df2f`) — 차트 대역 경계·값을 엔진 region(peaks[].region + features R) 단일 출처로 통일(차트=패널 일치, 미검출 대역 음영 제거), 디자인 2차 재수출(WCAG AA·휠 탐색·3단 축약·_ds_bundle 제외) 통합. A-12/N-9/리포트 N-13 값 일치·30셀 에러 0건 검증
   - **[2026-09-04 v5] CSV 업로드 실분석 루프 완성** (커밋 `2cb2888`) — `server.py`(stdlib, 정적 서빙+POST /api/analyze) 신설, 콘솔 업로드 버튼→엔진 export_json→판정 표시 E2E 검증(N-2_1 업로드→정상 0.0·경고 2건, ~70초). open_console.bat이 server.py 기동. 이제 "CSV 넣으면 분석까지" 동작 — 남은 단계는 exe 패키징(PyInstaller, 배포 필요 시점)뿐
-  - 이후: 디자인 3차 검수 응답 대기(다피크 셀 표시 대역 합 < Rp 정책, 리포트 기준 열 근사 비교 명시 확인). Login 2종은 통합 범위 밖 — 디자인 쪽 수출 시점에 통합
+  - **[2026-09-04 v6] 3차 재수출 통합 + pending 정식 UI + 기타 스트립 실측 + 테마 토글 배선** (커밋 `f398868`) — 기본 진입 Light 확정, 양 테마 30셀 순회 0건, 실업로드 pending→완료 전환 검증
+  - **[진행중] exe 패키징** — build_exe.py(PyInstaller onedir + 정적 자산 외부 유지: 프런트·모델 수정은 파일 교체만) 빌드 중
+  - 이후: Login 2종은 통합 범위 밖 — 디자인 쪽 수출 시점에 통합. pending "약 1분" 표기는 서버 소요 통계 제공 시 실값化 후보
 
 
 ## 완료
